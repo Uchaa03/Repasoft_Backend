@@ -66,3 +66,34 @@ Debemos de ejecutar las migraciones y lanzar los seeders para que la aplicación
 ````
 Una vez realizado todo ya tendremos listo nuestro backend para realizar las pruebas necesarias.
 
+
+## Diseño del modelo de usuario
+
+### Opciones consideradas
+
+1. **Modelo único `User` con campos opcionales y roles**
+    - Todos los tipos de usuario (administrador, técnico, cliente) comparten la misma tabla.
+    - Los campos específicos de cada tipo se definen como opcionales (`nullable`).
+    - Un campo `role` diferencia el tipo de usuario.
+    - Sencillez en autenticación y gestión de permisos.
+
+2. **Modelo principal `User` + modelos extendidos (`Technician`, `Client`)**
+    - Tabla `users` para datos comunes.
+    - Tablas `technicians` y `clients` para los datos específicos, enlazadas por `user_id`.
+    - Mayor normalización, pero más complejidad en consultas y relaciones.
+
+3. **Single Table Inheritance (STI)**
+    - Un campo `type` o `role` en la tabla `users` y lógica de herencia a nivel de modelo.
+    - No es nativo en Laravel y puede complicar el mantenimiento.
+
+### Opción elegida y justificación
+
+**Se ha optado por un único modelo `User` con campos opcionales y un campo `role`.**
+
+- Permite gestionar todos los usuarios desde una sola tabla y modelo.
+- Facilita la integración con paquetes de roles y permisos como [spatie/laravel-permission](https://spatie.be/docs/laravel-permission).
+- Simplifica la autenticación y el control de acceso.
+- Es fácilmente escalable y suficientemente flexible para los requisitos actuales del proyecto.
+
+Los campos específicos de técnicos o clientes (por ejemplo, `dni`, `address`, `phone`, `rating`, `repairs_count`, `profile_photo`, `password_changed`) se definen como opcionales y solo se utilizan según el tipo de usuario.
+
