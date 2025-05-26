@@ -28,12 +28,14 @@ Una vez cumplimos los requisitos
 
 ### Instalación de Sail en el proyecto
 
+Seleccionamos el servicio psql(PostgresSQL), al instalar sail.
+
 ````shell
     # Instalación de dependencia sail en el proyecto
     composer require laravel/sail --dev
     
     # Comando de configuración de la dependencia instalada
-    php artisan sail:install --with=pgsql
+    php artisan sail:install
 ````
 
 **Importante: Revisar que `.env` sea como él `.env.example` se debe de configurar con la instalación de sail, de lo
