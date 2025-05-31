@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticate;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticate
+class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
@@ -50,4 +50,21 @@ class User extends Authenticate
         'rating' => 'float',
         'repairs_count' => 'integer',
     ];
+
+    /**
+     * User clients repairs
+     */
+    public function clientRepairs()
+    {
+        return $this->hasMany(Repair::class, 'client_id');
+    }
+
+    /**
+     * User technicians repairs
+     */
+    public function technicianRepairs()
+    {
+        return $this->hasMany(Repair::class, 'technician_id');
+    }
+
 }
