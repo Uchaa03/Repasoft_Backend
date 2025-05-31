@@ -36,6 +36,11 @@ class Repair extends Model
         return $this->belongsTo(User::class, 'technician_id');
     }
 
+    public function store()
+    {
+        return $this->belongsTo(Store::class);
+    }
+
     protected static function booted(): void
     {
         static::creating(function ($repair) {

@@ -67,4 +67,9 @@ class User extends Authenticatable
         return $this->hasMany(Repair::class, 'technician_id');
     }
 
+
+    public function store()
+    {
+        return $this->belongsTo(Store::class);
+    }
 }
