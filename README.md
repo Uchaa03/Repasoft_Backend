@@ -101,124 +101,160 @@ Los campos específicos de técnicos o clientes (por ejemplo, `dni`, `address`, 
 
 ---
 
-## 📄 Modelo de Usuario
+# 📚 Modelos y Estructura de Datos
+
+## 📄 Modelo de Usuario (`users`)
 
 ### **Estructura y diseño**
-
-El modelo de usuario (`users`) centraliza la gestión de todos los tipos de usuarios de la aplicación: administradores, técnicos y clientes. Se ha optado por un **modelo único** con un campo `role` para diferenciar los tipos, y campos opcionales (`nullable`) para los atributos específicos de cada rol. Esta decisión simplifica la gestión, la autenticación y el mantenimiento del sistema.
-
----
+El modelo de usuario centraliza la gestión de todos los tipos de usuarios de la aplicación: **administradores, técnicos y clientes**. Se utiliza un único modelo con un campo `role` para diferenciar los tipos de usuario, y campos opcionales (`nullable`) para los atributos específicos de cada rol.
 
 ### **Campos de la tabla `users`**
 
-| Campo             | Tipo      | Descripción                                                       |
-|-------------------|-----------|-------------------------------------------------------------------|
-| id                | bigint    | Identificador único (autoincremental)                             |
-| name              | string    | Nombre completo del usuario                                       |
-| email             | string    | Correo electrónico (único)                                        |
-| email_verified_at | timestamp | Fecha de verificación del correo (opcional, para futuras mejoras) |
-| password          | string    | Contraseña cifrada                                                |
-| role              | enum      | Rol del usuario: `admin`, `technician` o `client`                 |
-| password_changed  | boolean   | Indica si el usuario ha cambiado la contraseña inicial            |
-| dni               | string    | Documento de identidad (único, opcional para técnicos y clientes) |
-| address           | string    | Dirección (opcional para técnicos y clientes)                     |
-| phone             | string    | Teléfono (opcional para técnicos y clientes)                      |
-| profile_photo     | string    | Ruta de la foto de perfil (opcional, solo para técnicos)          |
-| rating            | float     | Valoración media (opcional, solo para técnicos)                   |
-| repairs_count     | integer   | Número de reparaciones realizadas (opcional, solo para técnicos)  |
-| remember_token    | string    | Token de sesión (gestión interna de Laravel)                      |
-| created_at        | timestamp | Fecha de creación                                                 |
-| updated_at        | timestamp | Fecha de última actualización                                     |
+| Campo             | Tipo      | Descripción                                                     |
+|-------------------|-----------|-----------------------------------------------------------------|
+| id                | bigint    | Identificador único (autoincremental)                           |
+| name              | string    | Nombre completo del usuario                                     |
+| email             | string    | Correo electrónico (único)                                      |
+| email_verified_at | timestamp | Fecha de verificación del correo (opcional)                     |
+| password          | string    | Contraseña cifrada                                              |
+| role              | enum      | Rol del usuario: `admin`, `technician` o `client`               |
+| password_changed  | boolean   | Indica si el usuario ha cambiado la contraseña inicial          |
+| dni               | string    | Documento de identidad (opcional, único para técnicos/clientes) |
+| address           | string    | Dirección (opcional)                                            |
+| phone             | string    | Teléfono (opcional)                                             |
+| profile_photo     | string    | Ruta de la foto de perfil (opcional, técnicos)                  |
+| rating            | float     | Valoración media (opcional, técnicos)                           |
+| repairs_count     | integer   | Número de reparaciones realizadas (opcional, técnicos)          |
+| store_id          | foreignId | Tienda asociada (opcional, técnicos)                            |
+| remember_token    | string    | Token de sesión (Laravel)                                       |
+| created_at        | timestamp | Fecha de creación                                               |
+| updated_at        | timestamp | Fecha de última actualización                                   |
 
 ---
 
-### **Decisiones de diseño**
-
-- **Modelo único:** Todos los usuarios comparten la misma tabla. Los campos específicos de técnicos o clientes se dejan vacíos (`nullable`) para los demás roles.
-- **Campo `role`:** Permite distinguir fácilmente el tipo de usuario y controlar el acceso a funcionalidades específicas.
-- **Campos opcionales:** Los campos como `dni`, `address`, `phone`, `profile_photo`, `rating` y `repairs_count` solo se usan según el rol del usuario.
-- **Contraseña inicial:** El campo `password_changed` permite forzar el cambio de contraseña en el primer inicio de sesión, aumentando la seguridad.
-- **Foto de perfil:** Solo los técnicos pueden tener foto de perfil, almacenada como ruta/URL.
-- **Valoración y contador de reparaciones:** Permiten llevar un control de calidad y actividad sobre los técnicos.
-
----
-
-### **Ejemplo de estructura de la tabla**
-
-| id | name    | email               | role       | dni       | address         | phone     | profile_photo         | rating | repairs_count | password_changed |
-|----|---------|---------------------|------------|-----------|-----------------|-----------|-----------------------|--------|---------------|------------------|
-| 1  | Admin   | admin@empresa.com   | admin      |           |                 |           |                       |        |               | true             |
-| 2  | Técnico | tecnico@empresa.com | technician | 12345678A | Calle Falsa 123 | 600000001 | profile-photos/t1.jpg | 4.5    | 12            | false            |
-| 3  | Cliente | cliente@empresa.com | client     | 87654321B | Avda. Real 456  | 600000002 |                       |        |               | true             |
-
----
-
-### **Ventajas de este enfoque**
-
-- **Simplicidad:** Un único modelo y tabla para todos los usuarios.
-- **Facilidad de mantenimiento:** Menos relaciones y lógica condicional.
-- **Escalabilidad:** Fácil de añadir nuevos campos o roles en el futuro.
-- **Integración sencilla:** Compatible con paquetes de roles y permisos como Spatie.
-
----
-
-## 🛠️ Modelo de Reparaciones
+## 🏬 Modelo de Tienda (`stores`)
 
 ### **Estructura y diseño**
+El modelo de tienda centraliza la información de cada sucursal o punto de servicio. Cada tienda puede tener varios técnicos asociados y múltiples reparaciones.
 
-El modelo de reparaciones (`repairs`) gestiona todas las incidencias y servicios realizados en la aplicación. Cada reparación está asociada a un cliente y a un técnico, y puede estar vinculada a una tienda (store) si se implementa. El modelo permite llevar un control detallado del proceso, los costes, el estado y la valoración del servicio.
+### **Campos de la tabla `stores`**
+
+| Campo      | Tipo      | Descripción                         |
+|------------|-----------|-------------------------------------|
+| id         | bigint    | Identificador único                 |
+| name       | string    | Nombre de la tienda                 |
+| address    | string    | Dirección física de la tienda       |
+| created_at | timestamp | Fecha de creación                   |
+| updated_at | timestamp | Fecha de última actualización       |
+
+#### **Relaciones y métricas**
+- **Técnicos asociados:** Relación 1:N (`store` tiene muchos `users` con `role = technician`)
+- **Reparaciones:** Relación 1:N (`store` tiene muchas `repairs`)
+- **Ganancias y pérdidas:** Calculadas dinámicamente sumando los costes de las reparaciones asociadas (ver métodos en el modelo).
+- **Rating medio:** Promedio de las valoraciones de las reparaciones asociadas.
 
 ---
+
+## 🛠️ Modelo de Reparaciones (`repairs`)
+
+### **Estructura y diseño**
+El modelo de reparaciones gestiona todas las incidencias y servicios realizados. Cada reparación está asociada a un cliente, un técnico, una tienda y puede tener múltiples piezas asociadas.
 
 ### **Campos de la tabla `repairs`**
 
-| Campo         | Tipo      | Descripción                                                                 |
-|---------------|-----------|-----------------------------------------------------------------------------|
-| id            | bigint    | Identificador único (autoincremental)                                       |
-| ticket_number | string    | Código único de ticket generado automáticamente (ej: REP-1234CAR)           |
-| status        | enum      | Estado de la reparación: `pending`, `in_progress`, `completed`              |
-| client_id     | foreignId | Usuario cliente asociado (clave foránea a `users`)                          |
-| technician_id | foreignId | Usuario técnico asignado (clave foránea a `users`)                          |
-| store_id      | foreignId | Tienda asociada (clave foránea a `stores`, opcional según rama)             |
-| hours         | integer   | Horas de mano de obra estimadas/realizadas                                  |
-| labor_cost    | decimal   | Coste total de mano de obra (horas * 30 €)                                  |
-| parts_cost    | decimal   | Coste total de piezas asociadas                                             |
-| total_cost    | decimal   | Coste final editable (mano de obra + piezas, editable por técnico/admin)    |
-| is_warranty   | boolean   | Indica si la reparación está en garantía                                    |
-| rating        | integer   | Valoración del cliente (1-5 estrellas, solo cuando la reparación finaliza)  |
-| description   | text      | Descripción de la reparación                                                |
-| finished_at   | timestamp | Fecha de finalización (opcional)                                            |
-| created_at    | timestamp | Fecha de creación                                                           |
-| updated_at    | timestamp | Fecha de última actualización                                               |
+| Campo         | Tipo      | Descripción                                                    |
+|---------------|-----------|----------------------------------------------------------------|
+| id            | bigint    | Identificador único                                            |
+| ticket_number | string    | Código único de ticket generado automáticamente                |
+| status        | enum      | Estado: `pending`, `in_progress`, `completed`                  |
+| store_id      | foreignId | Tienda asociada                                                |
+| client_id     | foreignId | Usuario cliente asociado                                       |
+| technician_id | foreignId | Usuario técnico asignado (nullable)                            |
+| hours         | integer   | Horas de mano de obra                                          |
+| labor_cost    | decimal   | Coste total de mano de obra (horas x 30 €)                     |
+| parts_cost    | decimal   | Coste total de piezas asociadas                                |
+| total_cost    | decimal   | Coste final editable (mano de obra + piezas)                   |
+| is_warranty   | boolean   | Indica si la reparación está en garantía                       |
+| rating        | float     | Valoración del cliente (1-5 estrellas, nullable)               |
+| description   | text      | Descripción de la reparación                                   |
+| finished_at   | timestamp | Fecha de finalización (opcional)                               |
+| created_at    | timestamp | Fecha de creación                                              |
+| updated_at    | timestamp | Fecha de última actualización                                  |
+
+#### **Relaciones**
+- Pertenece a un cliente (`users`)
+- Pertenece a un técnico (`users`)
+- Pertenece a una tienda (`stores`)
+- Tiene muchas piezas asociadas (relación muchos a muchos con `parts`)
 
 ---
 
-### **Decisiones de diseño**
+## 🧩 Modelo de Piezas (`parts`)
 
-- **Ticket único:** El campo `ticket_number` se genera automáticamente con un formato identificativo y único.
-- **Estado controlado:** El campo `status` permite seguir el ciclo de vida de la reparación.
-- **Relaciones claras:** Cada reparación está asociada a un cliente y un técnico (ambos usuarios), y opcionalmente a una tienda.
-- **Costes desglosados:** Se separan los costes de mano de obra, piezas y el coste total editable.
-- **Garantía:** El campo `is_warranty` permite distinguir reparaciones cubiertas por garantía.
-- **Valoración:** El cliente puede valorar la reparación una vez finalizada.
-- **Escalabilidad:** Preparado para añadir relación con tienda (`store_id`) y piezas (`parts`) en futuras ramas.
+### **Estructura y diseño**
+El modelo de piezas gestiona el inventario de componentes disponibles para las reparaciones.
+
+### **Campos de la tabla `parts`**
+
+| Campo         | Tipo      | Descripción                                       |
+|---------------|-----------|---------------------------------------------------|
+| id            | bigint    | Identificador único                               |
+| name          | string    | Nombre de la pieza                                |
+| serial_number | string    | Número de serie (opcional, único)                 |
+| stock         | integer   | Cantidad disponible en inventario                 |
+| cost          | decimal   | Coste de compra para la tienda                    |
+| price         | decimal   | Precio de venta al cliente                        |
+| created_at    | timestamp | Fecha de creación                                 |
+| updated_at    | timestamp | Fecha de última actualización                     |
+
+#### **Relaciones**
+- Puede estar asociada a muchas reparaciones (relación muchos a muchos con `repairs`)
 
 ---
 
-### **Ejemplo de estructura de la tabla**
+## 🔗 Tabla pivote `part_repair`
 
-| id | ticket_number | status      | client_id | technician_id | store_id | hours | labor_cost | parts_cost | total_cost | is_warranty | rating | description        | finished_at         |
-|----|---------------|-------------|-----------|---------------|----------|-------|------------|------------|------------|-------------|--------|--------------------|---------------------|
-| 1  | REP-1234JUA   | completed   | 1         | 2             | 1        | 2     | 60.00      | 25.00      | 85.00      | false       | 5      | Cambio de pantalla | 2025-06-01 12:00:00 |
-| 2  | REP-5678MAR   | in_progress | 3         | 2             | 1        | 1     | 30.00      | 0.00       | 30.00      | false       |        | Revisión general   |                     |
+| Campo      | Tipo      | Descripción                                       |
+|------------|-----------|---------------------------------------------------|
+| id         | bigint    | Identificador único                               |
+| part_id    | foreignId | ID de la pieza                                    |
+| repair_id  | foreignId | ID de la reparación                               |
+| quantity   | integer   | Cantidad de piezas usadas en esa reparación       |
+| created_at | timestamp | Fecha de creación                                 |
+| updated_at | timestamp | Fecha de última actualización                     |
 
 ---
 
-### **Ventajas de este enfoque**
+## **Decisiones de diseño y ventajas**
 
-- **Trazabilidad:** Cada reparación tiene un identificador único y está asociada a los usuarios implicados.
-- **Control de costes:** Permite un desglose y control preciso de los costes de mano de obra y piezas.
-- **Gestión de garantías y valoraciones:** Facilita el seguimiento de reparaciones cubiertas por garantía y la calidad del servicio.
-- **Preparado para crecer:** Fácil de ampliar con piezas, tiendas y otros módulos en el futuro.
+- **Modelo único para usuarios:** Simplifica la gestión y autenticación.
+- **Relaciones claras y normalizadas:** Uso de claves foráneas y tabla pivote para integridad y consultas eficientes.
+- **Métricas y estadísticas:** Ganancias, pérdidas y rating medio calculados dinámicamente.
+- **Escalabilidad:** Estructura preparada para añadir nuevos roles, módulos o funcionalidades fácilmente.
+- **Facilidad de mantenimiento:** Todas las relaciones y dependencias están bien definidas y documentadas.
+
+---
+
+## **Ejemplo de relaciones Eloquent**
+
+```php
+// Obtener todas las reparaciones de una tienda
+$store->repairs;
+
+// Obtener técnicos de una tienda
+$store->technicians;
+
+// Obtener piezas usadas en una reparación
+$repair->parts;
+
+// Obtener reparaciones donde se usó una pieza
+$part->repairs;
+
+// Calcular ganancias de una tienda
+$store->total_earnings;
+
+// Calcular pérdidas por garantías de una tienda
+$store->total_losses;
+```
 
 ---

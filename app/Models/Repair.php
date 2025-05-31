@@ -41,6 +41,16 @@ class Repair extends Model
         return $this->belongsTo(Store::class);
     }
 
+    /**
+     * Much too Much.
+     */
+    public function parts()
+    {
+        return $this->belongsToMany(Part::class)
+            ->withPivot('quantity')
+            ->withTimestamps();
+    }
+
     protected static function booted(): void
     {
         static::creating(function ($repair) {
