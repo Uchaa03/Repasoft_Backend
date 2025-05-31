@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('ticket_number')->unique(); // Custom ticket
             $table->enum('status', ['pending', 'in_progress', 'completed']);
-            // $table->foreignId('store_id')->constrained('stores')->onDelete('cascade');
+            $table->foreignId('store_id')->constrained('stores')->onDelete('cascade');
             $table->foreignId('client_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('technician_id')->nullable()->constrained('users')->onDelete('set null');
             $table->integer('hours')->default(0);
