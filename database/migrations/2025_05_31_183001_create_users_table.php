@@ -19,7 +19,6 @@ return new class extends Migration {
             $table->string('password');
 
             // Attributes for roles and auth
-            $table->enum('role', ['admin', 'technician', 'client']);
             $table->boolean('password_changed')->default(false);
 
             // Attributes for Technicians and Clients
