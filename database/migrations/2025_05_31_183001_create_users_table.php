@@ -18,8 +18,10 @@ return new class extends Migration {
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
 
-            // Attributes for roles and auth
+            // Attributes for auth
             $table->boolean('password_changed')->default(false);
+            $table->string('two_factor_code')->nullable();
+            $table->timestamp('two_factor_expires_at')->nullable();
 
             // Attributes for Technicians and Clients
             $table->string('dni')->nullable()->unique();;
@@ -35,6 +37,7 @@ return new class extends Migration {
             // Attributes for laravel
             $table->rememberToken();
             $table->timestamps();
+
         });
 
 

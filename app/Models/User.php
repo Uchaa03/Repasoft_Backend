@@ -22,6 +22,8 @@ class User extends Authenticatable
         'email',
         'password',
         'password_changed',
+        'two_factor_code',
+        'two_factor_expires_at',
         'dni',
         'address',
         'phone',
