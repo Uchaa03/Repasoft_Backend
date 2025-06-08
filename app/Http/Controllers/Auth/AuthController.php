@@ -24,7 +24,6 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'password_changed' => true,
         ]);
 
         // Create new user
@@ -32,6 +31,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'password_changed' => true,
         ]);
 
         // Asignate role admin
