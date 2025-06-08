@@ -31,7 +31,6 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'password_changed' => true,
         ]);
 
         // Asignate role admin
@@ -55,11 +54,15 @@ class AuthController extends Controller
             'password' => 'required|string'
         ]);
 
-        if (!Auth::attempt($credentials)) {
+        // Search User by email
+        $user = User::where('email', $credentials['email'])->first();
+
+        // Verify password
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
             return response()->json(['error' => 'Credenciales inválidas'], 401);
         }
 
-        $user = Auth::user();
+        // Send 2FA code
         $this->sendTwoFactorCode($user);
 
         return response()->json([
@@ -67,6 +70,7 @@ class AuthController extends Controller
             'user_id' => $user->id
         ]);
     }
+
 
     //Verification 2FA and close login with token creation
     public function verify2FA(Request $request): JsonResponse
@@ -99,7 +103,7 @@ class AuthController extends Controller
         return response()->json([
             'token' => $token,
             'role' => $user->getRoleNames()->first(),
-            'requires_password_change' => !$user->password_changed
+            'requires_password_change' => $user->password_changed
         ]);
     }
 
