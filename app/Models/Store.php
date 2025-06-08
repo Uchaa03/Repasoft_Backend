@@ -11,10 +11,23 @@ class Store extends Model
 
     protected $fillable = ['name', 'address'];
 
-    // Técnicos asociados a la tienda
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
+
+    public function admins()
+    {
+        return $this->users()->whereHas('roles', function($query) {
+            $query->where('name', 'admin');
+        });
+    }
+
     public function technicians()
     {
-        return $this->hasMany(User::class)->where('role', 'technician');
+        return $this->users()->whereHas('roles', function($query) {
+            $query->where('name', 'technician');
+        });
     }
 
     // Reparaciones asociadas a la tienda
