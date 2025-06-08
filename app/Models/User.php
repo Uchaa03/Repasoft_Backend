@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, Notifiable, HasRoles, HasApiTokens;
 
     /**
      * Attributes for show.
@@ -21,12 +22,15 @@ class User extends Authenticatable
         'email',
         'password',
         'password_changed',
+        'two_factor_code',
+        'two_factor_expires_at',
         'dni',
         'address',
         'phone',
         'profile_photo',
         'rating',
         'repairs_count',
+        'store_id'
     ];
 
     /**
@@ -38,6 +42,8 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    protected $guard_name = 'api';
 
     /**
      * Native attributes for cast attributes
