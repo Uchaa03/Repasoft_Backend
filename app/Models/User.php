@@ -43,6 +43,8 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $guard_name = 'api';
+
     /**
      * Native attributes for cast attributes
      *
