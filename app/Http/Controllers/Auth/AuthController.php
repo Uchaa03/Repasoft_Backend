@@ -151,7 +151,7 @@ class AuthController extends Controller
             $tempPassword = Str::random(16);
             $user->update([
                 'password' => Hash::make($tempPassword),
-                'password_changed' => false
+                'password_changed' => true
             ]);
 
             Mail::to($user)->send(new TempPasswordMail($tempPassword));
