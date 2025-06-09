@@ -32,7 +32,6 @@ return new class extends Migration {
             $table->string('profile_photo')->nullable();
             $table->float('rating')->nullable()->default(0);
             $table->integer('repairs_count')->nullable()->default(0);
-            $table->foreignId('store_id')->nullable()->constrained('stores')->onDelete('set null');
 
             // Asociate technicians to admin for better logic
             $table->unsignedBigInteger('admin_id')->nullable();
