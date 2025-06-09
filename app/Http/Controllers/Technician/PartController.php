@@ -56,7 +56,7 @@ class PartController extends Controller
         ]);
     }
 
-
+    // Add part to repair
     public function addToRepairPart(Request $request, Repair $repair)
     {
         $request->validate([
@@ -98,5 +98,16 @@ class PartController extends Controller
             'message' => 'Pieza añadida a la reparación correctamente',
             'repair' => $repair->load('parts'),
         ]);
+    }
+
+    //List parts for get
+    public function listParts(Request $request)
+    {
+        $user = Auth::user();
+        $parts = Part::where('store_id', $user->store_id)
+            ->orderBy('name')
+            ->get();
+
+        return response()->json($parts);
     }
 }
