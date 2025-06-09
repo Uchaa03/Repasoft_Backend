@@ -18,12 +18,14 @@ class TechnicianController extends Controller
     public function listTechnicians()
     {
         $technicians = User::role('technician')
+            ->where('admin_id', auth()->id())
             ->with('store:id,name')
             ->select('id', 'name', 'email', 'dni', 'address', 'phone', 'profile_photo', 'store_id', 'rating', 'repairs_count')
             ->get();
 
         return response()->json($technicians);
     }
+
 
     // Register a Technician
     public function createTechnician(Request $request)
@@ -38,27 +40,30 @@ class TechnicianController extends Controller
             'profile_photo' => 'required|url',
         ]);
 
-        $tempPassword = Str::random(12);
+        // Verifica que la tienda pertenezca al admin actual
+        $store = Store::where('id', $validated['store_id'])
+            ->where('admin_id', auth()->id())
+            ->firstOrFail();
 
         $technician = User::create([
             ...$validated,
-            'password' => bcrypt($tempPassword),
-            'password_changed' => true,
+            'password' => bcrypt(Str::random(12)),
+            'password_changed' => false,
+            'admin_id' => auth()->id(),
         ]);
 
         $technician->assignRole('technician');
-
-        Mail::to($technician)->send(new TempPasswordMail($tempPassword));
-
-        return response()->json([
-            'message' => 'Técnico creado exitosamente',
-            'technician_id' => $technician->id
-        ], 201);
+        // ...envía correo, etc.
     }
+
 
     // Update technician data
     public function updateTechnician(Request $request, User $technician)
     {
+        if ($technician->admin_id != auth()->id()) {
+            return response()->json(['error' => 'No tienes permiso para actualizar este técnico'], 403);
+        }
+
         if (!$technician->hasRole('technician')) {
             return response()->json(['error' => 'El usuario no es un técnico'], 400);
         }
@@ -78,12 +83,11 @@ class TechnicianController extends Controller
     //Delete technician
     public function deleteTechnician(User $technician)
     {
-        if (!$technician->hasRole('technician')) {
-            return response()->json(['error' => 'El usuario no es un técnico'], 400);
+        if ($technician->admin_id != auth()->id()) {
+            return response()->json(['error' => 'No tienes permiso para eliminar este técnico'], 403);
         }
-
         $technician->delete();
-
         return response()->json(['message' => 'Técnico eliminado']);
     }
+
 }
