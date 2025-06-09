@@ -4,12 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Store;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class StoreController extends Controller
 {
     // Create a store
-    public function createStore(Request $request)
+    public function createStore(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'name' => 'required|string',
@@ -29,7 +30,7 @@ class StoreController extends Controller
 
 
     //List stores with data
-    public function listStores()
+    public function listStores(): JsonResponse
     {
         $stores = Store::where('admin_id', auth()->id())
             ->withCount(['technicians', 'repairs'])
@@ -53,7 +54,7 @@ class StoreController extends Controller
 
 
     //Delete a store if no have technicians
-    public function deleteStore(Store $store)
+    public function deleteStore(Store $store): JsonResponse
     {
         if ($store->admin_id != auth()->id()) {
             return response()->json(['error' => 'No tienes permiso para eliminar esta tienda'], 403);
@@ -64,7 +65,4 @@ class StoreController extends Controller
         $store->delete();
         return response()->json(['message' => 'Tienda eliminada']);
     }
-
-
-
 }
