@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Technician\ClientController;
+use App\Http\Controllers\Technician\PartController;
+use App\Http\Controllers\Technician\RepairController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -34,4 +37,21 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(functi
     Route::post('/technicians', [TechnicianController::class, 'createTechnician']);
     Route::put('/technicians/{technician}', [TechnicianController::class, 'updateTechnician']);
     Route::delete('/technicians/{technician}', [TechnicianController::class, 'deleteTechnician']);
+});
+
+// Protected routes for technicians functions
+Route::prefix('technician')->middleware(['auth:sanctum', 'role:technician'])->group(function () {
+    // Administrator parts for technicians
+    Route::get('/parts', [PartController::class, 'listParts']);
+    Route::post('/parts', [PartController::class, 'addPart']);
+    Route::post('/parts/{part}/increment-stock', [PartController::class, 'incrementStockPart']);
+
+    // Repairs for technicians
+    Route::post('/repairs', [RepairController::class, 'createRepair']);
+    Route::put('/repairs/{repair}/status', [RepairController::class, 'updateStatus']);
+    Route::post('/repairs/{repair}/add-part', [RepairController::class, 'addPartToRepair']);
+
+    // Controller for clients functions by technicians
+    Route::post('/clients', [ClientController::class, 'createClient']);
+    Route::get('/clients/dni', [ClientController::class, 'findByDni']);
 });
