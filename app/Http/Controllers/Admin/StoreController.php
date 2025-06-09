@@ -16,7 +16,10 @@ class StoreController extends Controller
             'address' => 'required|string',
         ]);
 
-        $store = Store::create($validated);
+        $store = Store::create([
+            ...$validated,
+            'admin_id' => auth()->id(),
+        ]);
 
         return response()->json([
             'message' => 'Tienda creada exitosamente',
@@ -24,10 +27,12 @@ class StoreController extends Controller
         ], 201);
     }
 
+
     //List stores with data
     public function listStores()
     {
-        $stores = Store::withCount(['technicians', 'repairs'])
+        $stores = Store::where('admin_id', auth()->id())
+            ->withCount(['technicians', 'repairs'])
             ->get()
             ->map(function ($store) {
                 return [
@@ -46,17 +51,20 @@ class StoreController extends Controller
     }
 
 
+
     //Delete a store if no have technicians
     public function deleteStore(Store $store)
     {
+        if ($store->admin_id != auth()->id()) {
+            return response()->json(['error' => 'No tienes permiso para eliminar esta tienda'], 403);
+        }
         if ($store->technicians()->exists()) {
             return response()->json(['error' => 'No se puede eliminar una tienda con técnicos asociados'], 400);
         }
-
         $store->delete();
-
         return response()->json(['message' => 'Tienda eliminada']);
     }
+
 
 
 }
