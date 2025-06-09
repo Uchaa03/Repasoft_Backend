@@ -24,7 +24,7 @@ return new class extends Migration {
             $table->timestamp('two_factor_expires_at')->nullable();
 
             // Attributes for Technicians and Clients
-            $table->string('dni')->nullable()->unique();;
+            $table->string('dni')->nullable()->unique();
             $table->string('address')->nullable();
             $table->string('phone')->nullable();
 
@@ -34,12 +34,14 @@ return new class extends Migration {
             $table->integer('repairs_count')->nullable()->default(0);
             $table->foreignId('store_id')->nullable()->constrained('stores')->onDelete('set null');
 
+            // Asociate technicians to admin for better logic
+            $table->unsignedBigInteger('admin_id')->nullable();
+            $table->foreign('admin_id')->references('id')->on('users')->onDelete('set null');
+
             // Attributes for laravel
             $table->rememberToken();
             $table->timestamps();
-
         });
-
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
