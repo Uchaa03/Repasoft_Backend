@@ -123,7 +123,7 @@ class AuthController extends Controller
 
         $user->update([
             'password' => Hash::make($request->new_password),
-            'password_changed' => true
+            'password_changed' => false
         ]);
 
         return response()->json(['message' => 'Contraseña actualizada']);

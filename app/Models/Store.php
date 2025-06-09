@@ -9,11 +9,16 @@ class Store extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'address'];
+    protected $fillable = ['name', 'address', 'admin_id'];
 
     public function users()
     {
         return $this->hasMany(User::class);
+    }
+
+    public function admin()
+    {
+        return $this->belongsTo(User::class, 'admin_id');
     }
 
     public function admins()
@@ -30,13 +35,11 @@ class Store extends Model
         });
     }
 
-    // Reparaciones asociadas a la tienda
     public function repairs()
     {
         return $this->hasMany(Repair::class);
     }
 
-    // Ganancias: suma de total_cost de reparaciones completadas y no en garantía
     public function getTotalEarningsAttribute()
     {
         return $this->repairs()
@@ -45,7 +48,6 @@ class Store extends Model
             ->sum('total_cost');
     }
 
-    // Pérdidas: suma de total_cost de reparaciones completadas en garantía
     public function getTotalLossesAttribute()
     {
         return $this->repairs()
@@ -54,7 +56,6 @@ class Store extends Model
             ->sum('total_cost');
     }
 
-    // Rating medio de las reparaciones asociadas a la tienda
     public function getAverageRatingAttribute()
     {
         return $this->repairs()

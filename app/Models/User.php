@@ -12,11 +12,6 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasRoles, HasApiTokens;
 
-    /**
-     * Attributes for show.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
@@ -30,14 +25,10 @@ class User extends Authenticatable
         'profile_photo',
         'rating',
         'repairs_count',
-        'store_id'
+        'store_id',
+        'admin_id'
     ];
 
-    /**
-     * Attributes hidden for security
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
@@ -45,11 +36,6 @@ class User extends Authenticatable
 
     protected $guard_name = 'api';
 
-    /**
-     * Native attributes for cast attributes
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password_changed' => 'boolean',
@@ -57,25 +43,23 @@ class User extends Authenticatable
         'repairs_count' => 'integer',
     ];
 
-    /**
-     * User clients repairs
-     */
     public function clientRepairs()
     {
         return $this->hasMany(Repair::class, 'client_id');
     }
 
-    /**
-     * User technicians repairs
-     */
     public function technicianRepairs()
     {
         return $this->hasMany(Repair::class, 'technician_id');
     }
 
-
     public function store()
     {
         return $this->belongsTo(Store::class);
+    }
+
+    public function admin()
+    {
+        return $this->belongsTo(User::class, 'admin_id');
     }
 }
