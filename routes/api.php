@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ClientRepairController;
 use App\Http\Controllers\Technician\ClientController;
 use App\Http\Controllers\Technician\PartController;
 use App\Http\Controllers\Technician\RepairController;
@@ -54,4 +55,11 @@ Route::prefix('technician')->middleware(['auth:sanctum', 'role:technician'])->gr
     // Controller for clients functions by technicians
     Route::post('/clients', [ClientController::class, 'createClient']);
     Route::get('/clients/dni', [ClientController::class, 'findByDni']);
+});
+
+// Protected routes for clients
+Route::prefix('client')->middleware(['auth:sanctum', 'role:client'])->group(function () {
+    // Repairs
+    Route::get('/repairs', [ClientRepairController::class, 'listRepairs']);
+    Route::post('/repairs/{repair}/rate', [ClientRepairController::class, 'rateRepair']);
 });
