@@ -35,7 +35,6 @@ class RepairController extends Controller
             'finished_at'   => null,
         ]);
 
-        // Notificar al cliente de la creación de la reparación
         Mail::to($repair->client)
             ->send(new RepairStatusChanged($repair, 'created'));
 
