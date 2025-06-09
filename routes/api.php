@@ -50,6 +50,7 @@ Route::prefix('technician')->middleware(['auth:sanctum', 'role:technician'])->gr
     Route::post('/repairs', [RepairController::class, 'createRepair']);
     Route::put('/repairs/{repair}/status', [RepairController::class, 'updateStatus']);
     Route::post('/repairs/{repair}/add-part', [RepairController::class, 'addPartToRepair']);
+    Route::get('/repairs', [RepairController::class, 'listRepairs']);
 
     // Controller for clients functions by technicians
     Route::post('/clients', [ClientController::class, 'createClient']);

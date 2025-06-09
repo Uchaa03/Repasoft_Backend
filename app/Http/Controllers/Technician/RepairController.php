@@ -113,4 +113,16 @@ class RepairController extends Controller
             'repair' => $repair->load('parts'),
         ]);
     }
+
+    //List repairs
+    public function listRepairs(Request $request)
+    {
+        $repairs = Repair::where('technician_id', Auth::id())
+            ->with(['client', 'store', 'parts'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($repairs);
+    }
+
 }
