@@ -15,11 +15,14 @@ class Part extends Model
         'stock',
         'cost',
         'price',
+        'store_id',
     ];
 
-    /**
-     * Much too Much.
-     */
+    public function store()
+    {
+        return $this->belongsTo(Store::class);
+    }
+
     public function repairs()
     {
         return $this->belongsToMany(Repair::class)
