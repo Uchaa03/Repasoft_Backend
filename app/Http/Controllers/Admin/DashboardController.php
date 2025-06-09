@@ -20,8 +20,8 @@ class DashboardController extends Controller
         $dailyFinancialStats = DB::table('repairs')
             ->select(
                 DB::raw('DATE(created_at) as date'),
-                DB::raw('SUM(CASE WHEN is_warranty = 0 AND status = "completed" THEN total_cost ELSE 0 END) as income'),
-                DB::raw('SUM(CASE WHEN is_warranty = 1 AND status = "completed" THEN total_cost ELSE 0 END) as expense')
+                DB::raw('SUM(CASE WHEN is_warranty = false AND status = \'completed\' THEN total_cost ELSE 0 END) as income'),
+                DB::raw('SUM(CASE WHEN is_warranty = true AND status = \'completed\' THEN total_cost ELSE 0 END) as expense')
             )
             ->where('created_at', '>=', now()->subDays(30))
             ->groupBy('date')

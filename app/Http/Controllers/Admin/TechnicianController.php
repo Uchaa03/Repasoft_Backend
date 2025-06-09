@@ -36,8 +36,6 @@ class TechnicianController extends Controller
             'address' => 'required|string',
             'phone' => 'required|string',
             'profile_photo' => 'required|url',
-            'password_changed' => true,
-
         ]);
 
         $tempPassword = Str::random(12);
@@ -45,7 +43,7 @@ class TechnicianController extends Controller
         $technician = User::create([
             ...$validated,
             'password' => bcrypt($tempPassword),
-            'password_changed' => false,
+            'password_changed' => true,
         ]);
 
         $technician->assignRole('technician');
