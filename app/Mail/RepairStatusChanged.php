@@ -2,15 +2,10 @@
 
 namespace App\Mail;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
 
-class RepairStatusChanged extends Mailable implements ShouldQueue
+class RepairStatusChanged extends Mailable
 {
-    use Queueable, SerializesModels;
-
     public $repair;
     public $oldStatus;
 
@@ -41,7 +36,7 @@ class RepairStatusChanged extends Mailable implements ShouldQueue
             ->with([
                 'repair' => $this->repair,
                 'oldStatus' => $this->oldStatus,
-                'message' => $message,
+                'notificationMessage' => $message, // <-- Cambia aquí
             ]);
     }
 

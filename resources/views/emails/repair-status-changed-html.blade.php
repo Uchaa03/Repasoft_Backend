@@ -6,7 +6,7 @@
 </head>
 <body>
 <h2>Hola, {{ $repair->client->name }}!</h2>
-<p>{{ $message }}</p>
+<p>{{ $notificationMessage }}</p>
 <p>Detalles de la reparación:</p>
 <ul>
     <li>Número de ticket: {{ $repair->ticket_number }}</li>
