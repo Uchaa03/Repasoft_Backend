@@ -96,11 +96,18 @@ class TechnicianController extends Controller
     {
         $admin = Auth::user();
 
-        $repairs = Repair::where('store_id', $admin->store_id)
+        $storeIds = Store::where('admin_id', $admin->id)->pluck('id');
+
+        if ($storeIds->isEmpty()) {
+            return response()->json(['message' => 'El administrador no gestiona ninguna tienda'], 400);
+        }
+
+        $repairs = Repair::whereIn('store_id', $storeIds)
             ->with(['client', 'technician', 'store', 'parts'])
             ->orderBy('created_at', 'desc')
             ->get();
 
         return response()->json($repairs);
     }
+
 }
