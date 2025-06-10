@@ -19,7 +19,7 @@ class TempPasswordMail extends Mailable
 
     public function build()
     {
-        return $this->markdown('emails.temp-password-html')
+        return $this->view('emails.temp-password-html')
             ->subject('Contraseña temporal');
     }
 }

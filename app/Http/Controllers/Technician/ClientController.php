@@ -59,6 +59,8 @@ class ClientController extends Controller
             ], 404);
         }
 
-        return response()->json($client);
+        return response()->json([
+            'client' => $client->only(['id', 'name', 'email', 'dni', 'phone'])
+        ]);
     }
 }

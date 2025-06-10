@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Mail\RepairStatusChanged;
 use App\Models\Part;
 use App\Models\Repair;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -35,7 +36,16 @@ class RepairController extends Controller
             'finished_at'   => null,
         ]);
 
-        Mail::to($repair->client)
+        // Get client by id selected in creation for get data
+        $client = User::find($validated['client_id']);
+
+        if (!$client || !$client->email) {
+            return response()->json([
+                'message' => 'No se puede enviar el correo: cliente o email no válido'
+            ], 400);
+        }
+
+        Mail::to($client)
             ->send(new RepairStatusChanged($repair, 'created'));
 
         return response()->json([
@@ -58,9 +68,11 @@ class RepairController extends Controller
             'finished_at' => $request->status === 'completed' ? now() : null,
         ]);
 
-        // Mail to client when status change
-        if ($repair->wasChanged('status') && $repair->client) {
-            Mail::to($repair->client)
+        // Get client data
+        $client = User::find($repair->client_id);
+
+        if ($repair->wasChanged('status') && $client && $client->email) {
+            Mail::to($client)
                 ->send(new RepairStatusChanged($repair, $oldStatus));
         }
 

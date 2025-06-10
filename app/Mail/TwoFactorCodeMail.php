@@ -19,7 +19,7 @@ class TwoFactorCodeMail extends Mailable
 
     public function build(): TwoFactorCodeMail
     {
-        return $this->markdown('emails.two-factor-html')
+        return $this->view('emails.two-factor-html')
             ->subject('Código de verificación 2FA');
     }
 }
