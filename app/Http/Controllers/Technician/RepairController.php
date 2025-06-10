@@ -68,6 +68,14 @@ class RepairController extends Controller
             'finished_at' => $request->status === 'completed' ? now() : null,
         ]);
 
+        // If repair is completed increment repairs technician count
+        if ($request->status === 'completed') {
+            $technician = User::find($repair->technician_id);
+            if ($technician) {
+                $technician->increment('repairs_count');
+            }
+        }
+
         // Get client data
         $client = User::find($repair->client_id);
 
@@ -84,6 +92,7 @@ class RepairController extends Controller
 
 
 
+
     public function addPartToRepair(Request $request, Repair $repair)
     {
         $request->validate([
@@ -93,23 +102,23 @@ class RepairController extends Controller
 
         $part = Part::findOrFail($request->part_id);
 
-        // Verificar que la pieza pertenezca a la tienda del técnico
+
         if ($part->store_id !== Auth::user()->store_id) {
             return response()->json(['message' => 'No tienes permisos para usar esta pieza'], 403);
         }
 
-        // Verificar stock suficiente
+        // Check repair stock
         if ($part->stock < $request->quantity) {
             return response()->json(['message' => 'No hay suficiente stock disponible'], 400);
         }
 
-        // Añadir la pieza a la reparación
+        // Add part ti repair
         $repair->parts()->attach($part->id, ['quantity' => $request->quantity]);
 
-        // Actualizar el stock de la pieza
+        // Update stock part
         $part->decrement('stock', $request->quantity);
 
-        // Calcular el nuevo parts_cost y total_cost
+        // Update cost repairs
         $partsCost = $repair->parts->sum(function ($part) {
             return $part->pivot->quantity * $part->price;
         });
