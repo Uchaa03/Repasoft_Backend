@@ -37,7 +37,7 @@ class RepairStatusChanged extends Mailable implements ShouldQueue
         }
 
         return $this->subject($subject)
-            ->view('emails.repair_status_changed')
+            ->view('emails.repair-status-changed-html')
             ->with([
                 'repair' => $this->repair,
                 'oldStatus' => $this->oldStatus,

@@ -35,14 +35,14 @@ class ClientController extends Controller
 
         $client->assignRole('client');
 
-        // Envía la contraseña temporal por email
         Mail::to($client)->send(new TempPasswordMail($tempPassword));
 
         return response()->json([
             'message' => 'Cliente creado exitosamente',
-            'client_id' => $client->id
+            'client' => $client->only(['id', 'name', 'email', 'dni', 'phone']),
         ], 201);
     }
+
 
     // Search Client by DNI
     public function findByDni(Request $request)
