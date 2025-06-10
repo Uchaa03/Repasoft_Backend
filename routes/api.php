@@ -34,4 +34,5 @@ Route::prefix('admin')->middleware(['auth:sanctum', 'role:admin'])->group(functi
     Route::post('/technicians', [TechnicianController::class, 'createTechnician']);
     Route::put('/technicians/{technician}', [TechnicianController::class, 'updateTechnician']);
     Route::delete('/technicians/{technician}', [TechnicianController::class, 'deleteTechnician']);
+    Route::get('/repairs', [TechnicianController::class, 'listAllRepairs']);
 });

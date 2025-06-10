@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Repair;
 use App\Models\User;
 use App\Models\Store;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TempPasswordMail;
@@ -87,5 +89,18 @@ class TechnicianController extends Controller
         $technician->delete();
 
         return response()->json(['message' => 'Técnico eliminado']);
+    }
+
+    //Get all repairs for admin stores are created
+    public function listAllRepairs()
+    {
+        $admin = Auth::user();
+
+        $repairs = Repair::where('store_id', $admin->store_id)
+            ->with(['client', 'technician', 'store', 'parts'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($repairs);
     }
 }
