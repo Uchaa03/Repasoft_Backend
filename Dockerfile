@@ -1,25 +1,38 @@
 FROM laravelsail/php84-composer:latest
 
-# Install php with extensions
+# Install required dependencies
 RUN apt-get update && apt-get install -y \
     unzip git curl libzip-dev libpng-dev libpq-dev libonig-dev libxml2-dev \
     && docker-php-ext-install zip pdo pdo_pgsql \
-    && apt-get clean
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Slect workdir in docker
+# Set working directory
 WORKDIR /var/www/html
 
-# Copy proyect from WORKDIR
+# Copy project files
 COPY . .
 
-# Install production dependences and optimize app
+# Install production dependencies and optimize autoloader
 RUN composer install --no-dev --optimize-autoloader
 
-# Clean config and genereta key for work
-RUN php artisan config:clear && php artisan key:generate
+# Clear config and cache routes
+RUN php artisan config:clear && \
+    php artisan config:cache && \
+    php artisan route:cache
 
-# Open work port for render
+# Create app key file only if it does not exist
+RUN if [ ! -f .env ]; then \
+        cp .env.example .env; \
+        php artisan key:generate; \
+    fi
+
+# Expose port (for reference, Render will use the PORT variable)
 EXPOSE 8080
 
-# Run migrations and seedes and start server
-CMD php artisan migrate --force && php artisan db:seed --force && php artisan serve --host=0.0.0.0 --port=8080
+# Custom startup command for Render
+CMD php artisan migrate --force && \
+    php artisan db:seed --force && \
+    php artisan serve --host=0.0.0.0 --port=${PORT:-8080}
+
