@@ -22,12 +22,6 @@ RUN php artisan config:clear && \
     php artisan config:cache && \
     php artisan route:cache
 
-# Create app key file only if it does not exist
-RUN if [ ! -f .env ]; then \
-        cp .env.example .env; \
-        php artisan key:generate; \
-    fi
-
 # Expose port (for reference, Render will use the PORT variable)
 EXPOSE 8080
 
